@@ -38,6 +38,13 @@ function Navbar() {
                 >
                   Logout
                 </button>
+                <Link
+                  to="/grud"
+                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-colors"
+                >
+                  GRUD
+                </Link>
+                
               </>
             ) : (
               <>

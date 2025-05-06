@@ -4,6 +4,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Home from './components/Home';
 import Navbar from './components/Navbar';
+import Grud from './components/grud/Grud';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 function App() {
@@ -15,9 +16,11 @@ function App() {
           <div className="container">
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/grud" element={<Grud />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="*" element={<Navigate to="/" />} />
+              
             </Routes>
           </div>
         </div>

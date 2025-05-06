@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+// src/components/Login.js
 function Login() {
-  const [username, setUsername] = useState('');
+  const [identifier, setIdentifier] = useState(''); // Cambiado de username a identifier
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login } = useAuth();
@@ -12,9 +13,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
-    const result = await login(username, password);
-    
+    const result = await login(identifier, password); // Envía identifier en lugar de username
     if (result.success) {
       navigate('/');
     } else {
@@ -36,15 +35,15 @@ function Login() {
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="space-y-4">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                Username
+              <label htmlFor="identifier" className="block text-sm font-medium text-gray-700">
+                Email o Nombre de Usuario
               </label>
               <input
-                id="username"
+                id="identifier"
                 type="text"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
                 required
               />
             </div>
