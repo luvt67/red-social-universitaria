@@ -2,7 +2,7 @@ import{ useState } from 'react';
 import BtnPerfil from './buttons/btnPerfil';
 import BtnHome from './buttons/btnHome';
 import Perfil from './Perfil';
-import Publicacion from '../components/Publicacion';
+import PostList from '../components/PostList';
 import FrmPublicacion from '../components/frmPublicacion';
 function Home() {
   const [currentView, setCurrentView] = useState('home');
@@ -14,7 +14,7 @@ function Home() {
       case 'home':
         return <div>
           <FrmPublicacion/>
-          <Publicacion/>
+          <PostList/>
         </div>;
       default:
         return <div>HOME</div>;

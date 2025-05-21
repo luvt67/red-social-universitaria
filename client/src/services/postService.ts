@@ -8,5 +8,5 @@ export async function createPost(dataPost: FormData)
 }
 export async function getAllPosts()
 {
-    return api.get('/publications/getposts');
+    return await api.get('/publications/getposts');
 }

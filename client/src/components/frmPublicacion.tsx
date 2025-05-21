@@ -4,7 +4,7 @@ import { usePost } from '../context/PostContext';
 import type { ChangeEvent, FormEvent } from 'react';
 
 function FrmPublicacion() {
-  const { createPost } = usePost();
+  const { createPost,posts} = usePost();
   const { user } = useAuth();
   const [descripcion, setDescripcion] = useState('');
   const [archivo, setArchivo] = useState<File | null>(null);
@@ -41,6 +41,7 @@ function FrmPublicacion() {
     try
     {
       await createPost(formData);
+      console.log(posts);
     } catch (error) {
       console.error('Error al crear la publicación:', error);
     }

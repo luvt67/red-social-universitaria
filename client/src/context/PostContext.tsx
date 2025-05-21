@@ -10,7 +10,7 @@ export const PostProvider = ({ children }: { children: React.ReactNode }) => {
         const response = await postService.createPost(postData);
         if(response)
         {
-          console.log("Post creado");
+          await getAllPosts();
         }
       }
       catch (error: any) {
@@ -18,13 +18,19 @@ export const PostProvider = ({ children }: { children: React.ReactNode }) => {
       }
       
   }
-
+  useEffect(() => {
+    getAllPosts();
+  }, []);
+  
+  
   const getAllPosts = async () => {
     try {
-      const response = await postService.getPosts();
+      const response = await postService.getAllPosts();
+
       if (response) {
         setPosts(response.data);
       }
+      
     } catch (error) {
       console.error('Error fetching posts:', error);
     }
