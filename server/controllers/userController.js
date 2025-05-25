@@ -3,12 +3,31 @@ const userService = require('../services/userService');
 async function login(req, res) {
   const { email, password } = req.body;
   try {
-    const user = await userService.login(email, password);
-    if (user) {
-      res.status(200).json(user);
-    } else {
-      res.status(401).json({ message: 'Usuario o contraseña incorrectos' });
+    const user = await userService.getUserByCorreo(email);
+    if(user){
+      if (user.password === password) {
+        res.status(200).json(user);
+      } else {
+        res.status(401).json({ error: 'Invalid password' });
+      }
     }
+    else{
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+}
+async function register(req, res) {
+  const { username, email, password } = req.body;
+  try {
+    const existingUser = await userService.getUserByCorreo(email);
+    if (existingUser) {
+      return res.status(400).json({ error: 'User already exists' });
+    }
+    const newUser = await userService.createUser({usuario: username, correo: email, password: password});
+    res.status(201).json(newUser);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error.message });
@@ -17,7 +36,7 @@ async function login(req, res) {
 // Controlador para obtener todos los usuarios
 async function getUsers(req, res) {
   try {
-    const users = await userService.getAllUsers();
+    const users = await userService.getUsers();
     res.json(users);
   } catch (error) {
     console.error(error);
@@ -25,10 +44,8 @@ async function getUsers(req, res) {
   }
 }
 
-// Controlador para crear un nuevo usuario
 async function createUser(req, res) {
   const { username, email, password } = req.body;
-  console.log('Creando usuario:', username, email, password);
   try {
     const newUser = await userService.createUser(username, email, password);
     res.status(201).json(newUser);
@@ -41,22 +58,37 @@ async function createUser(req, res) {
 // Controlador para actualizar un usuario
 async function updateUser(req, res) {
   try {
-    const {correo, usuario, biografia, institucion, escuela_profesional, facultad } = req.body;
+    const {correo, usuario, biografia, institucion, escuela_profesional, facultad, password, tipo_usuario, estado_cuenta} = req.body;
+
+    const user = await userService.getUserByCorreo(correo);
+    if (!user) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    const updateData = {};
+    const rawFields = {usuario, biografia, institucion, escuela_profesional, facultad,password, tipo_usuario, estado_cuenta};
+
+    // Agregar solo los campos no vacíos
+    for (const [key, value] of Object.entries(rawFields)) {
+      if (value !== undefined && value !== '') {
+        updateData[key] = value;
+      }
+    }
+    // Agregar foto si se subió
     const fotoFile = req.file;
-    const updateData = {
-      usuario,
-      biografia,
-      institucion,
-      escuela_profesional,
-      facultad
-    };
     if (fotoFile) {
       updateData.foto = fotoFile.buffer;
     }
-    const updatedUser = await userService.updateUser(correo, updateData);
+
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ error: "No se proporcionaron datos para actualizar" });
+    }
+
+    const updatedUser = await userService.updateUser(user.id, updateData);
     res.json(updatedUser);
+
   } catch (error) {
-    console.error(error);
+    console.error("Error al actualizar usuario:", error);
     res.status(500).json({ error: error.message });
   }
 }
@@ -75,6 +107,7 @@ async function deleteUser(req, res) {
 
 module.exports = {
   login,
+  register,
   getUsers,
   createUser,
   updateUser,

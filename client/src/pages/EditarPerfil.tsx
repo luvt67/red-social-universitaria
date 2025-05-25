@@ -3,24 +3,25 @@ import default_perfil from '../assets/default_perfil.png';
 import { useAuth } from '../context/AuthContext';
 
 function EditarPerfil({ onClose }: { onClose: () => void }) {
-  const { user, updateUser} = useAuth();
+  const { user, updateUser } = useAuth();
   const [preview, setPreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  // Estados para los campos del formulario
   const [usuario, setUsuario] = useState('');
   const [correo, setCorreo] = useState('');
+  const [password, setPassword] = useState('');
   const [biografia, setBiografia] = useState('');
   const [institucion, setInstitucion] = useState('');
   const [escuela, setEscuela] = useState('');
   const [facultad, setFacultad] = useState('');
 
+  const [showPassword, setShowPassword] = useState(false); // 👁️ Visibilidad
 
-  // Rellenar los campos si hay user
   useEffect(() => {
     if (user) {
       setUsuario(user.usuario || '');
       setCorreo(user.correo || '');
+      setPassword(user.password || '');
       setBiografia(user.biografia || '');
       setInstitucion(user.institucion || '');
       setEscuela(user.escuela_profesional || '');
@@ -31,27 +32,25 @@ function EditarPerfil({ onClose }: { onClose: () => void }) {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Crea vista previa como URL temporal (no base64)
       setPreview(URL.createObjectURL(file));
-      // Guarda el archivo original para enviarlo
       setSelectedFile(file);
     }
   };
-//   useEffect(() => {
-//     return () => {
-//       if (preview) URL.revokeObjectURL(preview);
-//     };
-//   }, [preview]);
 
-  const handleUpdateUser = async (e:React.FormEvent)=>{
+  const handleUpdateUser = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const formData = new FormData();
     formData.append('usuario', usuario);
-    formData.append('correo', correo);
+    formData.append('correo', user.correo);
     formData.append('biografia', biografia);
     formData.append('institucion', institucion);
     formData.append('escuela_profesional', escuela);
     formData.append('facultad', facultad);
+
+    if (password.trim() !== '') {
+      formData.append('password', password);
+    }
 
     if (selectedFile) {
       formData.append('foto', selectedFile);
@@ -68,16 +67,15 @@ function EditarPerfil({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/30 backdrop-blur-sm pointer-events-auto" />
-
       <div className="relative z-10 bg-white p-8 rounded-lg shadow-xl w-[90%] max-w-lg max-h-[90vh] overflow-y-auto">
         <h2 className="text-2xl font-semibold mb-4">Editar Perfil</h2>
 
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleUpdateUser}>
           {/* Imagen */}
           <div className="flex justify-center">
             <label htmlFor="foto" className="cursor-pointer relative w-32 h-32">
               <img
-                src={preview|| (user?.foto === null ? default_perfil : user?.foto)}
+                src={preview || (user?.foto === null ? default_perfil : user?.foto)}
                 alt="Foto de perfil"
                 className="w-full h-full object-cover rounded-full border-2 border-gray-400"
               />
@@ -108,6 +106,25 @@ function EditarPerfil({ onClose }: { onClose: () => void }) {
             onChange={(e) => setCorreo(e.target.value)}
             className="w-full p-2 border rounded"
           />
+
+          {/* Campo de contraseña con mostrar/ocultar */}
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Nueva contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-2 border rounded pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute top-1/2 right-2 transform -translate-y-1/2 text-sm text-gray-600"
+            >
+              {showPassword ? '🙈' : '👁️'}
+            </button>
+          </div>
+
           <textarea
             placeholder="Biografía"
             value={biografia}
@@ -138,16 +155,15 @@ function EditarPerfil({ onClose }: { onClose: () => void }) {
 
           <div className="flex justify-end space-x-2 pt-4">
             <button
-                type="button"
-                className="px-4 py-2 bg-gray-300 rounded"
-                onClick={onClose}
+              type="button"
+              className="px-4 py-2 bg-gray-300 rounded"
+              onClick={onClose}
             >
               Cancelar
             </button>
             <button
-                onClick={handleUpdateUser}  
-                type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              type="submit"
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
               Guardar
             </button>

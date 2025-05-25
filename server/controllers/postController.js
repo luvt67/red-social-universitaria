@@ -23,6 +23,7 @@ async function getAllPosts(req, res){
     }
 }
 
+
 module.exports = {  
     createPost,
     getAllPosts

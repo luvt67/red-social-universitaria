@@ -1,65 +1,88 @@
 const { tablas } = require('../models');
 
-// Servicio para obtener todos los usuarios
-async function getAllUsers() {
+async function getUsers() {
   try {
-    const users = await tablas.User.findAll();
+    const [users] = await tablas.Users.executeQuery('SELECT * FROM users');
     return users;
-  } catch (error) {
-    throw new Error('Error al obtener usuarios: ' + error.message);
+  }catch{
+    throw new Error('Error al obtener usuarios');
+  }
+}
+// buscar por id
+async function getUser(id) {
+  try {
+    const [user] = await tablas.Users.executeQuery('SELECT * FROM users WHERE id = ?', [id]);
+    return user[0];
+  } catch{
+    throw new Error('Error al obtener el usuario por ID');
+  }
+}
+// buscar por correo
+async function getUserByCorreo(correo) {
+  try {
+    const [user] = await tablas.Users.executeQuery('SELECT * FROM users WHERE correo = ?', [correo]);
+    return user[0];
+  } catch{
+    throw new Error('Error al obtener el usuario por correo');
   }
 }
 
-async function login(email,password){
+// Insertar
+async function createUser({usuario, correo, password, foto = null,biografia = null, institucion = null,
+  escuela_profesional = null, facultad = null,
+  tipo_usuario = 'I', estado_cuenta = 'activo'
+}) {
   try{
-    const [user] = await tablas.User.findByEmail(email);    
-    if(!user)
-        throw new Error('Usuario o contraseña incorrectos');
-    else{
-      if(user[0].password === password)
-      {
-        return user[0];
-      }
-    }
-  } catch(error)
-  {
-    throw new Error('Error al iniciar sesión: ' + error.message);
+    const result = await tablas.Users.executeQuery(
+      `INSERT INTO users (
+        usuario, correo, password, foto, biografia,
+        institucion, escuela_profesional, facultad,
+        tipo_usuario, estado_cuenta
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [usuario, correo, password, foto, biografia, institucion, escuela_profesional, facultad, tipo_usuario, estado_cuenta]
+    );
+    return await getUser(result.insertId);
+  }catch{
+    throw new Error('Error al crear el usuario');
   }
 }
 
-// Servicio para crear un nuevo usuario
-async function createUser(username, email, password) {
-  try {
-    const newUser = await tablas.User.createUser(username, email, password);
-    return newUser;
-  } catch (error) {
-    throw new Error('Error al crear usuario: ' + error.message);
-  }
-}
 
-// Servicio para actualizar un usuario
-async function updateUser(correo, updateData) {
-  try {
-    const [updatedUser] = await tablas.User.updateProfile(correo, updateData);
-    return updatedUser[0];
-  } catch (error) {
-    throw new Error('Error al actualizar usuario: ' + error.message);
-  }
-}
-
-// Servicio para eliminar un usuario
+// Eliminar un usuario
 async function deleteUser(id) {
-  try {
-    await tablas.User.deleteUser(id);
-    return { message: 'Usuario eliminado exitosamente' };
-  } catch (error) {
-    throw new Error('Error al eliminar usuario: ' + error.message);
+  try{
+    const result = await tablas.Users.executeQuery('DELETE FROM users WHERE id = ?', [id]);
+    return result.affectedRows > 0;
+  }
+  catch{
+    throw new Error('Error al eliminar el usuario');
   }
 }
+
+async function updateUser(id, updateData) {
+  const fields = [];
+  const values = [];
+
+  for (const [key, value] of Object.entries(updateData)) {
+    fields.push(`${key} = ?`);
+    values.push(value);
+  }
+
+  values.push(id);
+
+  const [result] = await tablas.Users.executeQuery(
+    `UPDATE users SET ${fields.join(', ')} WHERE id = ?`,
+    values
+  );
+
+  return result.affectedRows > 0 ? await getUser(id) : null;
+}
+
 
 module.exports = {
-  login,
-  getAllUsers,
+  getUsers,
+  getUser,
+  getUserByCorreo,
   createUser,
   updateUser,
   deleteUser

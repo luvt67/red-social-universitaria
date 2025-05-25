@@ -28,9 +28,9 @@ async function verifyConnectionAndRelations() {
   const success = await testConnection();
   if (success) {
     // cargar modelos
-    tablas.User = require('./User.model');
-    tablas.Publication = require('./Publication.model');
-    tablas.Comment = require('./Comment.model');
+    tablas.Users = require('./User.model');
+    tablas.Publications = require('./Publication.model');
+    tablas.Comments = require('./Comment.model');
 
     const verificacion = await verifyRelations();
     if (verificacion) {

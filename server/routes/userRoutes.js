@@ -7,12 +7,14 @@ const upload = multer({ storage: storage }).single('foto');
 
 const userController = require('../controllers/userController');
 
-// Rutas para manejar usuarios
-router.get('/', userController.getUsers);         // Obtener todos los usuarios
-router.post('/', userController.createUser);     // Crear un nuevo usuario
-router.put('/update',upload, userController.updateUser);   // Actualizar usuario por correo
-router.delete('delete', userController.deleteUser); // Eliminar usuario por ID
-router.post('/login', userController.login); // verificar credenciales
+//
+router.post('/register', userController.register);  
+router.post('/login', userController.login); 
+router.get('/getusers', userController.getUsers);  
+router.post('/create',upload, userController.createUser); 
+router.put('/update',upload, userController.updateUser);   
+router.delete('delete', userController.deleteUser);
+
 
 module.exports = router;
 
