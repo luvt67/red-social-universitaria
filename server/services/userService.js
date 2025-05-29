@@ -28,21 +28,48 @@ async function getUserByCorreo(correo) {
 }
 
 // Insertar
-async function createUser({usuario, correo, password, foto = null,biografia = null, institucion = null,
-  escuela_profesional = null, facultad = null,
-  tipo_usuario = 'I', estado_cuenta = 'activo'
+async function createUser({
+  usuario,
+  correo,
+  password,
+  foto = null,
+  biografia = null,
+  institucion = null,
+  escuela_profesional = null,
+  facultad = null,
+  tipo_usuario = 'I',
+  estado_cuenta = 'activo',
+  siguiendo = [],
+  seguidos = []
 }) {
-  try{
-    const result = await tablas.Users.executeQuery(
+  try {
+    const siguiendoStr = JSON.stringify(siguiendo ?? []);
+    const seguidosStr = JSON.stringify(seguidos ?? []);
+
+    const [result] = await tablas.Users.executeQuery(
       `INSERT INTO users (
         usuario, correo, password, foto, biografia,
         institucion, escuela_profesional, facultad,
-        tipo_usuario, estado_cuenta
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [usuario, correo, password, foto, biografia, institucion, escuela_profesional, facultad, tipo_usuario, estado_cuenta]
+        tipo_usuario, estado_cuenta, siguiendo, seguidos
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        usuario,
+        correo,
+        password,
+        foto,
+        biografia,
+        institucion,
+        escuela_profesional,
+        facultad,
+        tipo_usuario,
+        estado_cuenta,
+        siguiendoStr,
+        seguidosStr
+      ]
     );
     return await getUser(result.insertId);
-  }catch{
+  } catch (err) {
+    console.error('Error al crear el usuario:', err);
     throw new Error('Error al crear el usuario');
   }
 }

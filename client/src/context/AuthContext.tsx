@@ -103,6 +103,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       };
     }
   };
+  // ============================= UPDATE ADMIN =============================
+    const updateUserAdmin = async (userData: FormData) => {
+    try {
+      const response = await userService.updateUser(userData);
+      if (response && response.data) {
+        const updatedUser = response.data;
+        
+        if (updatedUser.foto) {
+          const image = convertImageToDataURL(updatedUser.foto);
+          if(image)
+          {
+            updatedUser.foto = image;
+          }
+        }
+        return { success: true, user: updatedUser };
+      }
+      return { success: true, user: response.data };
+    } catch (error: any) {
+      console.error('Error al actualizar usuario:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || 'Error al actualizar usuario',
+      };
+    }
+  };
+  // =======================================================================
   const createUser = async (userData: FormData) => {
     try {
       const response = await userService.createUser(userData);
@@ -137,7 +163,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, login, register,createUser, users, updateUser, deleteUser, logout }}
+      value={{ user, loading, login, register,createUser, users, updateUser, deleteUser, logout,updateUserAdmin}}
     >
       {children}
     </AuthContext.Provider>

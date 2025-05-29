@@ -45,9 +45,53 @@ async function getUsers(req, res) {
 }
 
 async function createUser(req, res) {
-  const { username, email, password } = req.body;
   try {
-    const newUser = await userService.createUser(username, email, password);
+    // Extrae todos los campos posibles del body
+    const {
+      usuario,
+      correo,
+      password,
+      biografia,
+      institucion,
+      escuela_profesional,
+      facultad,
+      tipo_usuario,
+      estado_cuenta,
+      siguiendo,
+      seguidos
+    } = req.body;
+    const verificar_correo = await userService.getUserByCorreo(correo);
+    if (verificar_correo) {
+      return res.status(400).json({ error: "El correo ya está en uso" });
+    }
+
+    // Elimina campos vacíos o undefined
+    const rawFields = {
+      usuario,
+      correo,
+      password,
+      biografia,
+      institucion,
+      escuela_profesional,
+      facultad,
+      tipo_usuario,
+      estado_cuenta
+    };
+    const userData = Object.fromEntries(
+      Object.entries(rawFields).filter(([_, value]) => value !== undefined && value !== '')
+    );
+
+    // Procesa siguiendo y seguidos si llegan como string
+    if (siguiendo) userData.siguiendo = JSON.parse(siguiendo);
+    if (seguidos) userData.seguidos = JSON.parse(seguidos);
+
+    // Procesa la foto si se subió
+    if (req.file) {
+      userData.foto = req.file.buffer;
+    }
+    const newUser = await userService.createUser(userData);
+    console.log("Nuevo usuario creado:", newUser);
+
     res.status(201).json(newUser);
   } catch (error) {
     console.error(error);

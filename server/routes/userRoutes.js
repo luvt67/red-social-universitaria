@@ -13,8 +13,7 @@ router.post('/login', userController.login);
 router.get('/getusers', userController.getUsers);  
 router.post('/create',upload, userController.createUser); 
 router.put('/update',upload, userController.updateUser);   
-router.delete('delete', userController.deleteUser);
-
+router.delete('/delete/:id', userController.deleteUser);
 
 module.exports = router;
 

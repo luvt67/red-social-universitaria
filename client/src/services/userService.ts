@@ -21,5 +21,5 @@ export async function createUser(userData: FormData) {
 }
 
 export async function deleteUser(id: string) {
-  return api.delete(`/users/${id}`);
+  return api.delete(`/users/delete/${id}`);
 }

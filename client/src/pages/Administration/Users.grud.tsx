@@ -40,7 +40,7 @@ interface FormState {
 }
 
 function UsersGrud() {
-  const { users } = useAuth();
+  const {users, createUser, updateUserAdmin, deleteUser, user} = useAuth(); // Agregamos 'user' del contexto
   const [usuario, setUsuario] = useState<User[]>([]);
   const [editId, setEditId] = useState<number | null>(null);
 
@@ -60,24 +60,28 @@ function UsersGrud() {
     seguidos: [],
   });
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const datausers = await users();
-        if (datausers?.users) {
-          const parsedUsers = datausers.users.map((user: any) => ({
-            ...user,
-            siguiendo: parseJSONorEmptyArray(user.siguiendo),
-            seguidos: parseJSONorEmptyArray(user.seguidos),
-          }));
-          setUsuario(parsedUsers);
-        } else {
-          setUsuario([]);
-        }
-      } catch (e) {
-        console.error("Error al obtener los usuarios", e);
+  // Obtener el ID del usuario actual autenticado
+  const currentUserId = user?.id;
+
+  const fetchUsers = async () => {
+    try {
+      const datausers = await users();
+      if (datausers?.users) {
+        const parsedUsers = datausers.users.map((user: any) => ({
+          ...user,
+          siguiendo: parseJSONorEmptyArray(user.siguiendo),
+          seguidos: parseJSONorEmptyArray(user.seguidos),
+        }));
+        setUsuario(parsedUsers);
+      } else {
+        setUsuario([]);
       }
-    };
+    } catch (e) {
+      console.error("Error al obtener los usuarios", e);
+    }
+  };
+
+  useEffect(() => {
     fetchUsers();
   }, [users]);
 
@@ -119,48 +123,39 @@ function UsersGrud() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    const formData = new FormData();
+    formData.append("usuario", form.usuario);
+    formData.append("correo", form.correo);
+    formData.append("password", form.password);
+    formData.append("biografia", form.biografia);
+    formData.append("institucion", form.institucion);
+    formData.append("escuela_profesional", form.escuela_profesional);
+    formData.append("facultad", form.facultad);
+    formData.append("tipo_usuario", form.tipo_usuario);
+    formData.append("estado_cuenta", form.estado_cuenta);
+    formData.append("siguiendo", JSON.stringify(form.siguiendo));
+    formData.append("seguidos", JSON.stringify(form.seguidos));
+    if (form.foto) {
+      formData.append("foto", form.foto);
+    }
     if (editId !== null) {
-      setUsuario((prev) =>
-        prev.map((user) =>
-          user.id === editId
-            ? {
-                ...user,
-                usuario: form.usuario,
-                correo: form.correo,
-                password: form.password ? form.password : user.password,
-                biografia: form.biografia,
-                institucion: form.institucion,
-                escuela_profesional: form.escuela_profesional,
-                facultad: form.facultad,
-                tipo_usuario: form.tipo_usuario,
-                estado_cuenta: form.estado_cuenta,
-                siguiendo: form.siguiendo,
-                seguidos: form.seguidos,
-                foto: form.fotoPreview || user.foto,
-              }
-            : user
-        )
-      );
+      formData.append("id", editId.toString());
+      const result = await updateUserAdmin(formData);
+      if(!result) {
+        alert("Error al actualizar el usuario");
+        return;
+      } 
+      else await fetchUsers();
+
     } else {
-      const newUser: User = {
-        id: usuario.length ? usuario[usuario.length - 1].id + 1 : 1,
-        usuario: form.usuario,
-        correo: form.correo,
-        password: form.password,
-        biografia: form.biografia,
-        institucion: form.institucion,
-        escuela_profesional: form.escuela_profesional,
-        facultad: form.facultad,
-        tipo_usuario: form.tipo_usuario,
-        estado_cuenta: form.estado_cuenta,
-        siguiendo: form.siguiendo,
-        seguidos: form.seguidos,
-        foto: form.fotoPreview || undefined,
-      };
-      setUsuario((prev) => [...prev, newUser]);
+      const result = await createUser(formData);
+      if (!result) {
+        alert("Error al crear usuario");
+        return;
+      }
+      else await fetchUsers();
     }
 
     setForm({
@@ -182,6 +177,12 @@ function UsersGrud() {
   };
 
   const handleEdit = (user: User) => {
+    // Verificar si el usuario intenta editarse a sí mismo
+    if (user.id === currentUserId) {
+      alert("No puedes editar tu propio usuario desde esta interfaz de administración.");
+      return;
+    }
+
     setForm({
       usuario: user.usuario,
       correo: user.correo,
@@ -200,8 +201,24 @@ function UsersGrud() {
     setEditId(user.id);
   };
 
-  const handleDelete = (id: number) => {
-    setUsuario((prev) => prev.filter((user) => user.id !== id));
+  const handleDelete = async (id: number) => {
+    // Verificar si el usuario intenta eliminarse a sí mismo
+    if (id === currentUserId) {
+      alert("No puedes eliminar tu propio usuario.");
+      return;
+    }
+
+    if (!confirm("¿Estás seguro de que deseas eliminar este usuario?")) {
+      return;
+    }
+
+    const result = await deleteUser(id);
+    if (result) {
+      setUsuario((prev) => prev.filter((user) => user.id !== id));
+      await fetchUsers();
+    } else {
+      alert("Error al eliminar el usuario.");
+    }
   };
 
   const tipoUsuarioTexto = (tipo: "I" | "E" | "A") => {
@@ -447,51 +464,69 @@ function UsersGrud() {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {usuario.map((u) => (
-              <tr key={u.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{u.id}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{u.usuario}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{u.correo}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {u.foto && (
-                    <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200">
-                      <img 
-                        src={u.foto} 
-                        alt="Foto de perfil" 
-                        className="w-full h-full object-cover"
-                      />
+            {usuario.map((u) => {
+              const isCurrentUser = u.id === currentUserId;
+              return (
+                <tr key={u.id} className={`hover:bg-gray-50 ${isCurrentUser ? 'bg-blue-50' : ''}`}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {u.id}
+                    {isCurrentUser && (
+                      <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                        Tú
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{u.usuario}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{u.correo}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {u.foto && (
+                      <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200">
+                        <img 
+                          src={u.foto} 
+                          alt="Foto de perfil" 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {tipoUsuarioTexto(u.tipo_usuario)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                      ${u.estado_cuenta === 'activo' ? 'bg-green-100 text-green-800' : 
+                        u.estado_cuenta === 'inactivo' ? 'bg-yellow-100 text-yellow-800' : 
+                        'bg-red-100 text-red-800'}`}>
+                      {u.estado_cuenta}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex space-x-2">
+                      <button
+                        className={`${isCurrentUser 
+                          ? 'text-gray-400 cursor-not-allowed' 
+                          : 'text-indigo-600 hover:text-indigo-900'}`}
+                        onClick={() => handleEdit(u)}
+                        disabled={isCurrentUser}
+                        title={isCurrentUser ? 'No puedes editarte a ti mismo' : 'Editar usuario'}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        className={`${isCurrentUser 
+                          ? 'text-gray-400 cursor-not-allowed' 
+                          : 'text-red-600 hover:text-red-900'}`}
+                        onClick={() => handleDelete(u.id)}
+                        disabled={isCurrentUser}
+                        title={isCurrentUser ? 'No puedes eliminarte a ti mismo' : 'Eliminar usuario'}
+                      >
+                        Eliminar
+                      </button>
                     </div>
-                  )}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {tipoUsuarioTexto(u.tipo_usuario)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                    ${u.estado_cuenta === 'activo' ? 'bg-green-100 text-green-800' : 
-                      u.estado_cuenta === 'inactivo' ? 'bg-yellow-100 text-yellow-800' : 
-                      'bg-red-100 text-red-800'}`}>
-                    {u.estado_cuenta}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <div className="flex space-x-2">
-                    <button
-                      className="text-indigo-600 hover:text-indigo-900"
-                      onClick={() => handleEdit(u)}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      className="text-red-600 hover:text-red-900"
-                      onClick={() => handleDelete(u.id)}
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
