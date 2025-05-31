@@ -1,8 +1,8 @@
 // ============================== GRUD USERS ==============================
 // PENDIENTE
-// - create user
-// - update user
-// - delete user
+// - create user x
+// - update user x 
+// - delete user x
 // ========================================================================
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
@@ -465,6 +465,7 @@ function UsersGrud() {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {usuario.map((u) => {
+              
               const isCurrentUser = u.id === currentUserId;
               return (
                 <tr key={u.id} className={`hover:bg-gray-50 ${isCurrentUser ? 'bg-blue-50' : ''}`}>

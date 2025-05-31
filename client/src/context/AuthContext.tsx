@@ -54,6 +54,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  // - users: Posiblemente deberia de usarlo con un useEffect
   const users = async () => {
     try {
       const response = await userService.getUsers();

@@ -66,6 +66,7 @@ async function createUser(req, res) {
     }
 
     // Elimina campos vacíos o undefined
+    const createDataUser = {};
     const rawFields = {
       usuario,
       correo,
@@ -77,19 +78,22 @@ async function createUser(req, res) {
       tipo_usuario,
       estado_cuenta
     };
-    const userData = Object.fromEntries(
-      Object.entries(rawFields).filter(([_, value]) => value !== undefined && value !== '')
-    );
+
+    for (const [key, value] of Object.entries(rawFields)) {
+      if (value !== undefined && value !== '') {
+        createDataUser[key] = value;
+      }
+    }
 
     // Procesa siguiendo y seguidos si llegan como string
-    if (siguiendo) userData.siguiendo = JSON.parse(siguiendo);
-    if (seguidos) userData.seguidos = JSON.parse(seguidos);
+    if (siguiendo) createDataUser.siguiendo = JSON.parse(siguiendo);
+    if (seguidos) createDataUser.seguidos = JSON.parse(seguidos);
 
     // Procesa la foto si se subió
     if (req.file) {
-      userData.foto = req.file.buffer;
+      createDataUser.foto = req.file.buffer;
     }
-    const newUser = await userService.createUser(userData);
+    const newUser = await userService.createUser(createDataUser);
     console.log("Nuevo usuario creado:", newUser);
 
     res.status(201).json(newUser);

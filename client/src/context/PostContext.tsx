@@ -6,7 +6,6 @@ export const PostProvider = ({ children }: { children: React.ReactNode }) => {
 
   const createPost = async (postData: FormData) => {
       try{
-        console.log(postData.get('archivo'));
         const response = await postService.createPost(postData);
         if(response)
         {
