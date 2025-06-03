@@ -1,4 +1,7 @@
+import { useState } from 'react';
 import default_avatar from '../assets/default_perfil.png';
+import CommentList from './CommentList';
+
 interface Usuario {
   id: number;
   usuario: string;
@@ -20,6 +23,8 @@ function Publicacion({
   nombre_archivo,
   usuario
 }: PublicacionProps) {
+  const [mostrarComentarios, setMostrarComentarios] = useState(false);
+
   const fechaObj = new Date(fecha);
   const fechaFormateada = fechaObj.toLocaleDateString('es-ES', {
     day: '2-digit',
@@ -34,7 +39,7 @@ function Publicacion({
   const avatar = usuario?.foto
     ? usuario.foto.startsWith('data:image')
       ? usuario.foto
-      : `http://localhost:3000/fotos/${usuario.foto}` // si foto es un archivo
+      : `http://localhost:3000/fotos/${usuario.foto}`
     : `${default_avatar}`;
 
   const nombreUsuario = usuario?.usuario || `Usuario ${id_usuario}`;
@@ -89,9 +94,13 @@ function Publicacion({
           )}
 
           <div className="flex justify-between mt-4 text-gray-600 text-sm max-w-md">
-            <button className="flex items-center gap-1 hover:text-blue-500 cursor-pointer">
-              💬 <span>Comentar</span>
+            <button
+              onClick={() => setMostrarComentarios(!mostrarComentarios)}
+              className="flex items-center gap-1 hover:text-blue-500 cursor-pointer"
+            >
+              💬 <span>{mostrarComentarios ? 'Ocultar' : 'Comentar'}</span>
             </button>
+
             <button className="flex items-center gap-1 hover:text-green-500 cursor-pointer">
               🔁 <span>Retwittear</span>
             </button>
@@ -102,6 +111,15 @@ function Publicacion({
               📤 <span>Compartir</span>
             </button>
           </div>
+
+          {mostrarComentarios && (
+            <div className="mt-4">
+              <CommentList
+                idPublicacion={id_usuario}
+                usuarioActual={nombreUsuario}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
