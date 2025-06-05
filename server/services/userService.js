@@ -27,7 +27,7 @@ async function getUserByCorreo(correo) {
   }
 }
 
-// Insertar
+// Crear usuario
 async function createUser({
   usuario,
   correo,
@@ -86,6 +86,7 @@ async function deleteUser(id) {
   }
 }
 
+// Actualizar un usuario
 async function updateUser(id, updateData) {
   const fields = [];
   const values = [];

@@ -57,7 +57,8 @@ function PostList() {
 
         return (
           <Publicacion
-            key={post.id}
+            key = {post.id}
+            id_publicacion={post.id}
             id_usuario={post.id_usuario}
             descripcion={post.descripcion}
             fecha={post.fecha}

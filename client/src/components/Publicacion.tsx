@@ -9,6 +9,7 @@ interface Usuario {
 }
 
 interface PublicacionProps {
+  id_publicacion: number;
   id_usuario: number;
   descripcion: string;
   fecha: string;
@@ -17,6 +18,7 @@ interface PublicacionProps {
 }
 
 function Publicacion({
+  id_publicacion,
   id_usuario,
   descripcion,
   fecha,
@@ -32,20 +34,12 @@ function Publicacion({
   });
 
   const esPDF = nombre_archivo?.toLowerCase().endsWith('.pdf');
-  const urlArchivo = nombre_archivo
-    ? `http://localhost:3000/uploads/${nombre_archivo}`
-    : '';
+  const urlArchivo = nombre_archivo ? `http://localhost:3000/uploads/${nombre_archivo}` : '';
 
-  const avatar = usuario?.foto
-    ? usuario.foto.startsWith('data:image')
-      ? usuario.foto
-      : `http://localhost:3000/fotos/${usuario.foto}`
-    : `${default_avatar}`;
+  const avatar = usuario?.foto ? usuario.foto.startsWith('data:image') ? usuario.foto: `http://localhost:3000/fotos/${usuario.foto}` : `${default_avatar}`;
 
   const nombreUsuario = usuario?.usuario || `Usuario ${id_usuario}`;
-  const arrobaUsuario = usuario?.usuario
-    ? `@${usuario.usuario.toLowerCase()}`
-    : `@usuario${id_usuario}`;
+  const arrobaUsuario = usuario?.usuario ? `@${usuario.usuario.toLowerCase()}` : `@usuario${id_usuario}`;
 
   return (
     <div className="border border-gray-300 shadow-md rounded-xl p-4 w-full mx-auto mb-4 bg-white hover:bg-gray-50 transition">
@@ -100,23 +94,12 @@ function Publicacion({
             >
               💬 <span>{mostrarComentarios ? 'Ocultar' : 'Comentar'}</span>
             </button>
-
-            <button className="flex items-center gap-1 hover:text-green-500 cursor-pointer">
-              🔁 <span>Retwittear</span>
-            </button>
-            <button className="flex items-center gap-1 hover:text-pink-500 cursor-pointer">
-              ❤️ <span>Me gusta</span>
-            </button>
-            <button className="flex items-center gap-1 hover:text-gray-800 cursor-pointer">
-              📤 <span>Compartir</span>
-            </button>
           </div>
 
           {mostrarComentarios && (
             <div className="mt-4">
               <CommentList
-                idPublicacion={id_usuario}
-                usuarioActual={nombreUsuario}
+                id_publicacion={id_publicacion}
               />
             </div>
           )}

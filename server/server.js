@@ -6,7 +6,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoutes');
-
+const commentRoutes = require('./routes/commentRoutes');
 // Cargar las variables de entorno
 dotenv.config();
 
@@ -20,6 +20,7 @@ app.use(cors());
 // =================================== RUTAS ==================================
 app.use('/api/users', userRoutes);
 app.use('/api/publications',postRoutes);
+app.use('/api/comments', commentRoutes);
 // ============================================================================
 // ================================ RUTAS ESTATICAS ===========================
 app.use('/uploads', express.static(path.join(__dirname,'uploads')));

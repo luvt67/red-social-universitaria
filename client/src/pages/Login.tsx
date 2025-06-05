@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+
 export default function Login() {
-  const {login} = useAuth();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulación de login
     const result = await login(email, password);
     if (result.success) {
       setSuccess('Login exitoso 🎉');
@@ -49,9 +49,14 @@ export default function Login() {
           /><br />
           <button type="submit" className="flex justify-center ">Login</button>
         </form>
-  
+
         {error && <p style={{ color: 'red' }}>{error}</p>}
         {success && <p style={{ color: 'green' }}>{success}</p>}
+
+        {/* Enlace para registrarse */}
+        <Link to="/register" style={{ display: 'block', marginTop: '10px', textAlign: 'center' }}>
+          ¿No tienes una cuenta? Regístrate aquí
+        </Link>
       </div>
     </div>
   );

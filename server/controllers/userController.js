@@ -1,5 +1,7 @@
 const userService = require('../services/userService');
 
+
+// Login user
 async function login(req, res) {
   const { email, password } = req.body;
   try {
@@ -19,6 +21,8 @@ async function login(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
+
+// Register a new user
 async function register(req, res) {
   const { username, email, password } = req.body;
   try {
@@ -33,7 +37,7 @@ async function register(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
-// Controlador para obtener todos los usuarios
+// Get all users
 async function getUsers(req, res) {
   try {
     const users = await userService.getUsers();

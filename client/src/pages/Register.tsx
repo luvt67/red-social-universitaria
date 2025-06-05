@@ -1,10 +1,10 @@
 // src/pages/Register.tsx
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 export default function Register() {
-  const { register } = useAuth(); // <-- Importamos la función del contexto
+  const { register } = useAuth();
   const navigate = useNavigate();
 
   const [username, setUsername] = useState('');
@@ -20,8 +20,6 @@ export default function Register() {
     if (result.success) {
       setSuccess('Registro exitoso 🎉');
       setError(null);
-
-      // Opcional: redirige al login después de registrarse
       setTimeout(() => navigate('/login'), 1500);
     } else {
       setError(result.error);
@@ -60,11 +58,15 @@ export default function Register() {
           /><br />
           <button type="submit">Registrar</button>
         </form>
-  
+
         {error && <p style={{ color: 'red' }}>{error}</p>}
         {success && <p style={{ color: 'green' }}>{success}</p>}
+
+        {/* Enlace a login */}
+        <Link to="/login" style={{ display: 'block', marginTop: '10px', textAlign: 'center' }}>
+          ¿Ya tienes una cuenta? Inicia sesión aquí
+        </Link>
       </div>
     </div>
   );
-  
 }

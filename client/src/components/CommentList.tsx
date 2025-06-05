@@ -1,44 +1,61 @@
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
 import Comment from './Comment';
+import { useAuth } from '../context/AuthContext';
+import { usePost} from '../context/PostContext';
+
+
 
 interface Comentario {
-  usuario: string;
-  texto: string;
+  id_comentador: string;
+  descripcion: string;
   fecha: string;
 }
 
 interface CommentListProps {
-  idPublicacion: number;
-  usuarioActual: string;
+  id_publicacion: number
 }
 
-function CommentList({ idPublicacion, usuarioActual }: CommentListProps) {
+function CommentList({id_publicacion }: CommentListProps) {
+
+  const { user } = useAuth();
+  const {createComment} = usePost();
+  const { getAllCommentsPost } = usePost();
   // Datos de prueba iniciales
-  const [comentarios, setComentarios] = useState<Comentario[]>([
-    {
-      usuario: 'Maria23',
-      texto: '¡Qué buena publicación!',
-      fecha: new Date().toISOString(),
-    },
-    {
-      usuario: 'CarlosDev',
-      texto: 'Interesante punto de vista, gracias por compartir.',
-      fecha: new Date().toISOString(),
-    },
-  ]);
-
+  const [comentarios, setComentarios] = useState<Comentario[]>([]);
+  
   const [nuevoComentario, setNuevoComentario] = useState('');
+  // =========== Cargar comentarios al montar el componente =====================
+  useEffect(() => {
+    async function fetchComentarios() {
+      let db_comentarios = await getAllCommentsPost(id_publicacion.toString());
+      // Ordenar por fecha descendente (más reciente primero)
+      db_comentarios.sort(
+        (a: Comentario, b: Comentario) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+      );
+      setComentarios(db_comentarios);
+    }
+    fetchComentarios();
+  }, [id_publicacion]);
 
-  const agregarComentario = () => {
+// ============================================================================
+  const agregarComentario = async () => {
     if (nuevoComentario.trim() === '') return;
-
-    const comentario: Comentario = {
-      usuario: usuarioActual,
-      texto: nuevoComentario.trim(),
-      fecha: new Date().toISOString(),
-    };
-
-    setComentarios([...comentarios, comentario]);
+    const formData = new FormData();
+    formData.append('id_publicacion', id_publicacion.toString());
+    formData.append('id_comentador', user.id);
+    formData.append('descripcion', nuevoComentario.trim());
+    
+    const response = await createComment(formData);
+    if (!response.success)
+    {
+      console.log("Error al crear el comentario");
+      return;
+    }
+    const db_comentarioas = await getAllCommentsPost(id_publicacion.toString());
+    db_comentarioas.sort(
+      (a: Comentario, b: Comentario) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+    );
+    setComentarios(db_comentarioas);
     setNuevoComentario('');
   };
 
@@ -65,8 +82,8 @@ function CommentList({ idPublicacion, usuarioActual }: CommentListProps) {
           comentarios.map((comentario, index) => (
             <Comment
               key={index}
-              usuario={comentario.usuario}
-              texto={comentario.texto}
+              id_comentador={comentario.id_comentador}
+              descripcion={comentario.descripcion}
               fecha={comentario.fecha}
             />
           ))
