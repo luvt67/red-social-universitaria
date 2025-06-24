@@ -1,5 +1,10 @@
 # red-social-universitaria
 IS: Proyecto de curso
+## Integrantes del proyecto
+- Pumachoque Choquenaira Jhon Esau  - 210940
+- Torre Cano Eduardo                - 211361
+- Quispe Tayna Jose Luis            - 200340
+- Molocho Condori Brayan Vladymir   - 164244 
 
 # 🗂️ Estructura del proyecto
 
@@ -44,4 +49,5 @@ IS: Proyecto de curso
 │   ├── package-lock.json
 │   ├── package.json
 │   └── server.js
+```
 
