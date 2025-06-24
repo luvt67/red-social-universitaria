@@ -1,8 +1,10 @@
 # red-social-universitaria
 IS: Proyecto de curso
 
-# Organizacion del proyecto
-## 🗂️ Estructura del proyecto
+# 🗂️ Estructura del proyecto
+
+```text
+.
 ├── client
 │   ├── node_modules/
 │   ├── public/
@@ -30,15 +32,16 @@ IS: Proyecto de curso
 │   ├── tsconfig.node.json
 │   └── vite.config.ts
 ├── server
-    ├── config/
-    ├── controllers/
-    ├── models/
-    ├── node_modules/
-    ├── routes/
-    ├── services/
-    ├── uploads/
-    ├── utils/
-    ├── .env
-    ├── package-lock.json
-    ├── package.json
-    └── server.js
+│   ├── config/
+│   ├── controllers/
+│   ├── models/
+│   ├── node_modules/
+│   ├── routes/
+│   ├── services/
+│   ├── uploads/
+│   ├── utils/
+│   ├── .env
+│   ├── package-lock.json
+│   ├── package.json
+│   └── server.js
+
