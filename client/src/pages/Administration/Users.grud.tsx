@@ -235,7 +235,7 @@ function UsersGrud() {
   };
 
   return (
-    <div className="mt-6 overflow-x-auto max-w-full p-4">
+    <div className="mt-6 overflow-x-auto max-w-full p-4 h-max">
       <h1 className="text-2xl font-bold mb-4">Usuario CRUD</h1>
 
       <form
