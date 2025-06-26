@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const { tablas } = require('../models');
 
 async function getUsers() {
@@ -43,6 +44,21 @@ async function createUser({
   seguidos = []
 }) {
   try {
+    // Validación básica
+    if (!password) {
+      throw new Error('La contraseña es requerida');
+    }
+
+    // Determinar tipo_usuario basado en el correo
+    let tipoUsuarioFinal = 'I'; // Por defecto: Invitado
+    if (correo && correo.endsWith('@unsaac.edu.pe')) {
+      tipoUsuarioFinal = 'E'; // Estudiante
+    }
+
+    // Encriptar la contraseña
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
     const siguiendoStr = JSON.stringify(siguiendo ?? []);
     const seguidosStr = JSON.stringify(seguidos ?? []);
 
@@ -55,18 +71,19 @@ async function createUser({
       [
         usuario,
         correo,
-        password,
+        hashedPassword, // Aquí se guarda la contraseña encriptada
         foto,
         biografia,
         institucion,
         escuela_profesional,
         facultad,
-        tipo_usuario,
+        tipoUsuarioFinal, // Se usa el tipo calculado
         estado_cuenta,
         siguiendoStr,
         seguidosStr
       ]
     );
+
     return await getUser(result.insertId);
   } catch (err) {
     console.error('Error al crear el usuario:', err);

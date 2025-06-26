@@ -174,8 +174,7 @@ function FrmPublicacion() {
             <div
               className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 shrink-0"
               style={{
-                backgroundImage:
-                  'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDvJQYxfM6hSpe8pQFNt37MS2ncy9-gln92TirllbzV8vST1zn57ko10gBr0KpH4j1RJQ0bcXGQc4I2vYYz0Ess6OVq85mejhAS3_WhJrq-Ah_19yuWR2RSYzfJZWTPaap5o4SXsnm8ldngZ2UlEr_9ci0PwO4U0xAi50PrG2hqJ9av_1661KenKOcgDO1Ss9eVj6oR3BoFRl1eVS3f9jZpPDtl6uctb_atLcVb__PvPyH6V6tjoo6-awYR8OZzUv3r_ppGDcwyTRF8")',
+                backgroundImage: user.foto ? `url(${user.foto})` : 'none',
               }}
             ></div>
           </div>

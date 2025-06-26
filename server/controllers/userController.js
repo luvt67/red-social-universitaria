@@ -1,24 +1,30 @@
+const bcrypt = require('bcryptjs');
 const userService = require('../services/userService');
 
 
 // Login user
 async function login(req, res) {
   const { email, password } = req.body;
+
   try {
+    // Buscar usuario por correo
     const user = await userService.getUserByCorreo(email);
-    if(user){
-      if (user.password === password) {
-        res.status(200).json(user);
-      } else {
-        res.status(401).json({ error: 'Invalid password' });
-      }
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
-    else{
-      res.status(404).json({ error: 'User not found' });
+    // Comparar contraseñas usando bcrypt
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Invalid password' });
     }
+    // // Opcional: eliminar el campo password antes de enviar al cliente
+    // const { password: _, ...userWithoutPassword } = user;
+    // Enviar respuesta exitosa
+    return res.status(200).json(user);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }
 
