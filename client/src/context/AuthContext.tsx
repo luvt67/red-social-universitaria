@@ -161,10 +161,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem('user');
     setUser(null);
   };
+  // ============================= CONSULTAS =============================
+  const consulta = async () => {
+    try {
+      const response = await userService.consulta();
+      return response.data;
+    } catch (error: any) {
+      console.error('Error al realizar la consulta:', error);
+      return [];
+    }
+  };
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, login, register,createUser, users, updateUser, deleteUser, logout,updateUserAdmin}}
+      value={{ user, loading, login, register,createUser, users, updateUser, deleteUser, logout,updateUserAdmin, consulta }}
     >
       {children}
     </AuthContext.Provider>

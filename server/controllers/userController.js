@@ -162,6 +162,15 @@ async function deleteUser(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
+async function consulta(req, res) {
+  try {
+    const result = await userService.consulta();
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+}
 
 module.exports = {
   login,
@@ -169,5 +178,6 @@ module.exports = {
   getUsers,
   createUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  consulta
 };

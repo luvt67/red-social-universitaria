@@ -6,6 +6,7 @@
 // ========================================================================
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
+import generatePDF from "../../utils/GeneratePDF"; // Asegúrate de tener esta función implementada
 
 interface User {
   id: number;
@@ -451,7 +452,7 @@ function UsersGrud() {
       </form>
 
       <div className="overflow-x-auto bg-white rounded-lg shadow">
-        <table className="min-w-full divide-y divide-gray-200">
+        <table id = "users-table" className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>

@@ -12,6 +12,10 @@ export async function getUsers() {
   return await api.get('/users/getusers');
 }
 
+export async function consulta() {
+  return await api.get('/users/maspublicaciones');
+}
+
 export async function updateUser(userData: FormData) {
   return api.put('/users/update', userData,{headers:{'content-type':'multipart/form-data'}});
 }

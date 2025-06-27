@@ -14,6 +14,7 @@ router.get('/getusers', userController.getUsers);
 router.post('/create',upload, userController.createUser); 
 router.put('/update',upload, userController.updateUser);   
 router.delete('/delete/:id', userController.deleteUser);
+router.get('/maspublicaciones',userController.consulta);
 
 module.exports = router;
 

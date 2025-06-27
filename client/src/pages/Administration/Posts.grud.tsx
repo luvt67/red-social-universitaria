@@ -72,7 +72,7 @@ function PublicationsGrud() {
   };
 
   return (
-    <div className="mt-6 max-w-5xl mx-auto p-4">
+    <div className="mt-6 overflow-x-auto max-w-full p-4 h-max">
       <h2 className="text-2xl font-bold mb-6">CRUD de Publicaciones</h2>
 
       <form
@@ -178,8 +178,7 @@ function PublicationsGrud() {
           )}
         </div>
       </form>
-
-      <div className="overflow-x-auto bg-white rounded-lg shadow">
+      <div className="overflow-x-auto max-w-full bg-white rounded-lg shadow">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>

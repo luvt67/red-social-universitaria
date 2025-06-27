@@ -66,8 +66,9 @@ export const PostProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
   // ======================================================
-
-
+  // ======================= Consultas ====================
+  
+  // ======================================================
   return (
     <PostContext.Provider value={{ posts, createPost, getAllPosts , createComment,getAllCommentsPost}}>
       {children}

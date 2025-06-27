@@ -123,6 +123,31 @@ async function updateUser(id, updateData) {
   return result.affectedRows > 0 ? await getUser(id) : null;
 }
 
+async function consulta()
+{
+  try {
+    const [result] = await tablas.Users.executeQuery(`
+      SELECT 
+        u.id,
+        u.usuario,
+        COUNT(p.id) AS total_publicaciones
+      FROM 
+        users u
+      LEFT JOIN 
+        publications p ON u.id = p.id_usuario
+      GROUP BY 
+        u.id, u.usuario
+      ORDER BY 
+        total_publicaciones DESC
+      LIMIT 10;
+    `);
+    return result;
+  } catch (error) {
+    console.error('Error en la consulta:', error);
+    throw new Error('Error al realizar la consulta');
+  }
+}
+
 
 module.exports = {
   getUsers,
@@ -130,5 +155,6 @@ module.exports = {
   getUserByCorreo,
   createUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  consulta
 };
