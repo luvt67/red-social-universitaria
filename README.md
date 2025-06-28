@@ -1,5 +1,6 @@
 # red-social-universitaria
-IS: Proyecto de curso
+Curso: Ingenieria de software
+Proyecto: Una red universitaria para una universidad publica
 ## Integrantes del proyecto
 - Pumachoque Choquenaira Jhon Esau  - 210940
 - Torre Cano Eduardo                - 211361
