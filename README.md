@@ -1,6 +1,5 @@
 # red-social-universitaria
-Curso: Ingenieria de software
-
+Curso: Ingenieria de software<br>
 Proyecto: Una red universitaria para una universidad publica para poder compartir informacion
 ## Integrantes del proyecto
 - Pumachoque Choquenaira Jhon Esau  - 210940
