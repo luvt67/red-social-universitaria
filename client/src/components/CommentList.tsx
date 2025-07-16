@@ -7,6 +7,8 @@ import { usePost} from '../context/PostContext';
 
 interface Comentario {
   id_comentador: string;
+  usuario: string;
+  foto: string | null;
   descripcion: string;
   fecha: string;
 }
@@ -46,9 +48,9 @@ function CommentList({id_publicacion }: CommentListProps) {
     formData.append('descripcion', nuevoComentario.trim());
     
     const response = await createComment(formData);
-    if (!response.success)
+    if (!response)
     {
-      console.log("Error al crear el comentario");
+      console.log(response.error);
       return;
     }
     const db_comentarioas = await getAllCommentsPost(id_publicacion.toString());
@@ -83,8 +85,11 @@ function CommentList({id_publicacion }: CommentListProps) {
             <Comment
               key={index}
               id_comentador={comentario.id_comentador}
+              usuario={comentario.usuario}
+              foto={comentario.foto}
               descripcion={comentario.descripcion}
               fecha={comentario.fecha}
+              
             />
           ))
         )}

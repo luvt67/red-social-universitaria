@@ -76,6 +76,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       };
     }
   };
+  const getuser = async (id: string) => {
+    try {
+      const response = await userService.getuser(id);
+      const userdata = response.data;
+      if(userdata.foto)
+      {
+        const image = convertImageToDataURL(userdata.foto);
+          if(image)
+          {
+            userdata.foto = image;
+          }
+      }
+      return { success: true, user: userdata };
+    } catch (error: any) {
+      console.error('Error al obtener usuarios:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || 'Error al cargar los usuarios',
+      };
+    }
+  };
+  
 
   const updateUser = async (userData: FormData) => {
     try {
@@ -174,7 +196,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, login, register,createUser, users, updateUser, deleteUser, logout,updateUserAdmin, consulta }}
+      value={{ user, loading, login, register,createUser, users,getuser, updateUser, deleteUser, logout,updateUserAdmin, consulta }}
     >
       {children}
     </AuthContext.Provider>

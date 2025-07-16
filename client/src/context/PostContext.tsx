@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import * as postService from '../services/postService';
 import * as commentService from '../services/commentService';
+import {convertImageToDataURL} from '../utils/ConvertImage';
 
 const PostContext = createContext<any>(null);
 export const PostProvider = ({ children }: { children: React.ReactNode }) => {
@@ -55,16 +56,24 @@ export const PostProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
-  const getAllCommentsPost = async (id_publicacion: string) => {
-    try {
-      const response = await commentService.getAllComments(id_publicacion);
-      if (response) {
-        return response.data;
+const getAllCommentsPost = async (id_publicacion: string) => {
+  try {
+    const response = await commentService.getAllComments(id_publicacion);
+    const commentdata = response.data;
+
+    // Convertir la imagen de cada comentario
+    for (const comment of commentdata) {
+      if (comment.foto) {
+        comment.foto = convertImageToDataURL(comment.foto);
       }
-    } catch (error) {
-      console.error('Error fetching comments:', error);
     }
+
+    return commentdata;
+  } catch (error) {
+    console.error('Error fetching comments:', error);
   }
+};
+
   // ======================================================
   // ======================= Consultas ====================
   

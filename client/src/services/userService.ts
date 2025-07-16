@@ -11,6 +11,9 @@ export async function register(username: string, email: string, password: string
 export async function getUsers() {
   return await api.get('/users/getusers');
 }
+export async function getuser(id: string) {
+  return api.post('/users/getuser',{id})
+}
 
 export async function consulta() {
   return await api.get('/users/maspublicaciones');

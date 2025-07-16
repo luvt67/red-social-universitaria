@@ -11,13 +11,26 @@ async function createComment(commentData) {
 }
 
 async function getComments(id_publicacion) {
-    const [comments] = await tablas.Comments.executeQuery( `SELECT * FROM comentarios WHERE id_publicacion = ?`, [id_publicacion]);
-    return comments;
+  const [comments] = await tablas.Comments.executeQuery(`
+    SELECT 
+      comentarios.id,
+      comentarios.descripcion,
+      comentarios.fecha,
+      users.id AS id_comentador,
+      users.usuario,
+      users.foto
+    FROM comentarios
+    INNER JOIN users ON comentarios.id_comentador = users.id
+    WHERE comentarios.id_publicacion = ?
+    ORDER BY comentarios.fecha ASC
+  `, [id_publicacion]);  
+  return comments;
 }
+
 // buscar por id
 async function getComment(id) {
   try {
-    const [comment] = await tablas.Comments.executeQuery('SELECT * FROM Comentarios WHERE id = ?', [id]);
+    const [comment] = await tablas.Comments.executeQuery('SELECT * FROM comentarios WHERE id = ?', [id]);
     return comment[0];
   } catch{
     throw new Error('Error al obtener comentario por ID');
@@ -27,4 +40,5 @@ async function getComment(id) {
 module.exports = {
     createComment,
     getComments,
+    getComment,
 };
