@@ -16,6 +16,7 @@ router.post('/create',upload, userController.createUser);
 router.put('/update',upload, userController.updateUser);   
 router.delete('/delete/:id', userController.deleteUser);
 router.get('/maspublicaciones',userController.consulta);
+router.get('/search', userController.searchUsers);
 
 module.exports = router;
 

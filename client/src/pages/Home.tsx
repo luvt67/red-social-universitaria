@@ -13,6 +13,7 @@ import Settings from '../components/Settings';
 import PendingPosts from '../components/PendingPosts';
 import Help from '../components/Help';
 import Analytics from '../components/Analytics';
+import Weather from '../components/Weather';
 import { useAuth } from '../context/AuthContext';
 // import { login } from '../services/userService';
 
@@ -261,10 +262,13 @@ function Home() {
 
           {/* Panel derecho - FIJO */}
           <aside className="layout-content-container flex flex-col w-64 h-full overflow-hidden">
-            <div className="bg-slate-50 p-4 h-full">
-              <h3 className="text-lg font-semibold text-[#0d141c] mb-4">Panel Derecho</h3>
-              <div className="text-sm text-gray-600">
-                Contenido adicional, widgets, o información complementaria
+            <div className="bg-slate-50 p-4 h-full overflow-y-auto">
+              <Weather />
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                <h3 className="text-lg font-semibold text-[#0d141c] mb-4">Información</h3>
+                <div className="text-sm text-gray-600">
+                  Contenido adicional, widgets, o información complementaria
+                </div>
               </div>
             </div>
           </aside>

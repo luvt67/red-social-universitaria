@@ -181,6 +181,21 @@ async function consulta(req, res) {
   }
 }
 
+async function searchUsers(req, res) {
+  const { query } = req.query;
+  try {
+    if (!query || query.trim() === '') {
+      return res.status(400).json({ error: 'Query parameter is required' });
+    }
+    
+    const users = await userService.searchUsersByName(query);
+    res.json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+}
+
 module.exports = {
   login,
   register,
@@ -189,5 +204,6 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
-  consulta
+  consulta,
+  searchUsers
 };

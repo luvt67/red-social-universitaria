@@ -148,6 +148,34 @@ async function consulta()
   }
 }
 
+async function searchUsersByName(query) {
+  try {
+    const searchTerm = `%${query}%`;
+    const [users] = await tablas.Users.executeQuery(`
+      SELECT 
+        id,
+        usuario,
+        correo,
+        foto,
+        biografia,
+        institucion,
+        escuela_profesional,
+        facultad,
+        tipo_usuario
+      FROM users 
+      WHERE usuario LIKE ? 
+      AND estado_cuenta = 'activo'
+      ORDER BY usuario ASC
+      LIMIT 20
+    `, [searchTerm]);
+    
+    return users;
+  } catch (error) {
+    console.error('Error al buscar usuarios:', error);
+    throw new Error('Error al realizar la búsqueda de usuarios');
+  }
+}
+
 
 module.exports = {
   getUsers,
@@ -156,5 +184,6 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
-  consulta
+  consulta,
+  searchUsersByName
 };
